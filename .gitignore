@@ -1,0 +1,5 @@
+# VS generated files
+.vs/
+bin/
+obj/
+*.user
