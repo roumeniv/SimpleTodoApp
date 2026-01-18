@@ -46,7 +46,7 @@ SimpleTodoApp/
 3. **Mark Complete**: Mark pending todos as completed
 4. **Delete Todo**: Remove todos you no longer need
 5. **Auto-save**: Todos are automatically saved to file
-```  
+ 
 
 ## Branches  
 
