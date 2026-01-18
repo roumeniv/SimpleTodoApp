@@ -1,26 +1,35 @@
-# Simple Todo Application
+# ✅ Simple Todo App - MASTER BRANCH
 
-A simple console-based Todo application built with C# .NET Core.
+## 🎯 **Stable Production Version (v1.0)**
 
-## Features
+This is the **master branch** - a fully functional, stable Todo application ready for daily use.
 
-- ✅ Add, view, edit, and delete todos
-- ✅ Mark todos as complete/incomplete
-- ✅ File persistence (automatic save/load)
-- ✅ Clean console interface
-- ✅ Input validation
+### ✨ **Features**
+- **Add Todos** - Quick task entry with optional due dates
+- **View Todos** - Clean display with completion status
+- **Mark Complete** - Simple checkoff system  
+- **Delete Todos** - Remove unwanted items
+- **File Persistence** - Automatic save/load (no data loss!)
+- **Input Validation** - Prevents empty todos
+
+### 🚀 **Quick Start**
+```bash
+# 1. Clone repository
+git clone https://github.com/YOUR-USERNAME/SimpleTodoApp.git
+
+# 2. Ensure you're on master branch (default)
+cd SimpleTodoApp
+git status
+
+# 3. Open in Visual Studio and press F5
 
 ## Project Structure
 
 ```
 SimpleTodoApp/
-├── Program.cs              # Main application entry point
-├── Models/
-│   └── TodoItem.cs        # Todo item data model
-├── Services/
-│   └── TodoService.cs     # Business logic and file operations
-├── todos.txt              # Data file (auto-created)
-└── README.md              # This file
+├── Program.cs              # Complete application (monolithic design)
+├── todos.txt               # Data storage (auto-generated)
+└── README.md               # This documentation
 ```
 
 ## How to Run
@@ -47,6 +56,8 @@ SimpleTodoApp/
 - C# .NET 9.0
 - File I/O for persistence
 - Git for version control
+
+💡 For the development version with improved architecture, check the refactoring branch.  
 
 ## Author
 
