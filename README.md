@@ -22,14 +22,15 @@ cd SimpleTodoApp
 git status
 
 # 3. Open in Visual Studio and press F5
+```  
 
 ## Project Structure
 
 ```
-SimpleTodoApp/
-├── Program.cs              # Complete application (monolithic design)
-├── todos.txt               # Data storage (auto-generated)
-└── README.md               # This documentation
+SimpleTodoApp/  
+├── Program.cs              # Complete application (monolithic design)  
+├── todos.txt               # Data storage (auto-generated)  
+└── README.md               # This documentation  
 ```
 
 ## How to Run
@@ -45,20 +46,21 @@ SimpleTodoApp/
 3. **Mark Complete**: Mark pending todos as completed
 4. **Delete Todo**: Remove todos you no longer need
 5. **Auto-save**: Todos are automatically saved to file
+```  
 
-## Branches
+## Branches  
 
-- `main`: Stable version with basic features
-- `refactoring`: Development branch with improved architecture
+- `main`: Stable version with basic features  
+- `refactoring`: Development branch with improved architecture  
 
-## Technologies
+## Technologies  
 
-- C# .NET 9.0
-- File I/O for persistence
-- Git for version control
+- C# .NET 9.0  
+- File I/O for persistence  
+- Git for version control  
 
 💡 For the development version with improved architecture, check the refactoring branch.  
 
-## Author
+## Author  
 
-Roumen Ivanov
+Roumen Ivanov  
