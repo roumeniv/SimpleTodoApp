@@ -14,18 +14,18 @@ This is the **refactoring branch** - an improved version with clean architecture
 | **Testing** | 📋 Planned | Unit test preparation |
 
 ### 🏗️ **New Architecture**
-SimpleTodoApp/
-├── Models/
-│ └── TodoItem.cs # Data model with validation
-├── Services/
-│ └── TodoService.cs # Business logic & file operations
-├── Program.cs # Clean UI layer (presentation only)
-├── todos.txt # Data file (excluded from Git)
-└── README.md # This documentation
+SimpleTodoApp/  
+├── Models/  
+│ └── TodoItem.cs # Data model with validation  
+├── Services/  
+│ └── TodoService.cs # Business logic & file operations  
+├── Program.cs # Clean UI layer (presentation only)  
+├── todos.txt # Data file (excluded from Git)  
+└── README.md # This documentation  
 
 
-### 🔧 **Technical Improvements**
-1. **Separation of Concerns**
+### 🔧 **Technical Improvements**  
+1. **Separation of Concerns**  
    - **Models**: Data structure only
    - **Services**: Business logic only  
    - **Program.cs**: User interface only
@@ -85,8 +85,9 @@ Testing Readiness	Difficult	Easy
 
 📋 Create GUI version (Windows Forms)
 
-💡 This is the development branch. Switch to master for the stable, production-ready version.
+💡 This is the development branch. Switch to master for the stable, production-ready version. 
+```  
 
-### Author  
+##Author  
 
 Roumen Ivanov  
