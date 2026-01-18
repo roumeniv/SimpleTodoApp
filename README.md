@@ -85,9 +85,9 @@ Testing Readiness	Difficult	Easy
 
 📋 Create GUI version (Windows Forms)
 
-💡 This is the development branch. Switch to master for the stable, production-ready version. 
+💡 This is the development branch. Switch to master for the stable, production-ready version.  
 ```  
 
-##Author  
+## Author  
 
 Roumen Ivanov  
