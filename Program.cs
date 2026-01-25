@@ -437,7 +437,7 @@ namespace SimpleTodoApp
             }
         }
     }
-
+/*
     class TodoItem
     {
         public string Title { get; set; } = "";
@@ -454,4 +454,5 @@ namespace SimpleTodoApp
             }
         }
     }
+*/
 }
