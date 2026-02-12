@@ -8,33 +8,21 @@ namespace SimpleTodoApp
 {
     class Program
     {
-        static List<TodoItem> todos = new List<TodoItem>();
+        private static TodoService _todoService = new TodoService();
 
         static void Main(string[] args)
         {
-            // Try to enable better character support
-            try
-            {
-                Console.OutputEncoding = System.Text.Encoding.UTF8;
-            }
-            catch
-            {
-                // If it fails, continue with default encoding
-            }
 
-            Console.WriteLine("=== SIMPLE TODO APP ===\n");
 
-            // Load existing todos from file
-            LoadTodosFromFile();
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            
 
-            Console.WriteLine("Welcome! This is your todo list.");
-            Console.WriteLine("Press any key to start...");
+            Console.WriteLine("=== SIMPLE TODO APP (Refactored Version) ===\n");
+            Console.WriteLine("Welcome! Todos are automatically saved.\n");
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
 
             RunMenu();
-
-            // Optional: Save one lats time when exiting
-            SaveTodosToFile();
 
             Console.WriteLine("\nGoodbye! Your todos have been saved.");
             Console.WriteLine("Press any key to exit...");
@@ -52,47 +40,40 @@ namespace SimpleTodoApp
 
                 switch (choice)
                 {
-                    case "1":
-                        AddTodo();
-                        break;
-                    case "2":
-                        ViewTodos();
-                        break;
-                    case "3":
-                        DeleteTodo();
-                        break;
-                    case "4":
-                        MarkTodoComplete();
-                        break;
-                    case "5":
-                        EditTodo();
-                        break;
-                    case "6":
-                        running = false;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid choice! Press 1-6");
-                        Console.ReadKey();
-                        break;
+                    case "1": AddTodo(); break;
+                    case "2": ViewTodos(); break;
+                    case "3": ViewPending(); break;
+                    case "4": ViewCompleted(); break
+                    case "5": MarkTodoComplete(); break;
+                    case "6": DeleteTodo(); break;
+                    case "7": SearchTodo(); break;
+                    case "8": ShowStats(); break;
+                    case "9": running = false; break;
+                    default: Console.WriteLine("Invalid choice!"); break;
+                }
+
+                if (choice != "9")
+                {
+                    Console.WriteLine("\nPress any key to continue...");
+                    Console.ReadKey();
                 }
             }
-
-            Console.WriteLine("\nGoodbye! Press any key to exit...");
-            Console.ReadKey();
         }
 
         static void ShowMenu()
         {
             Console.Clear();
-            Console.WriteLine("=== TODO Menu ===");
+            Console.WriteLine("=== TODO Menu (Refactored) ===");
             Console.WriteLine("1. Add Todo");
-            Console.WriteLine("2. View Todos");
-            Console.WriteLine("3. Delete Todo"); 
-            Console.WriteLine("4. Mark Complete");
-            Console.WriteLine("5. Edit Todo");
-            Console.WriteLine("6. Exit");
-            Console.Write("\nChoose (1-6): ");
-
+            Console.WriteLine("2. View All Todos");
+            Console.WriteLine("3. View Pending Todos");
+            Console.WriteLine("4. View Completed Todos");
+            Console.WriteLine("5. Mark Todo as Complete");
+            Console.WriteLine("6. Delete Todo");
+            Console.WriteLine("7. Search Todos");
+            Console.WriteLine("8. Show Statistics");
+            Console.WriteLine("9. Exit");
+            Console.Write("\nChoose (1-9): ");
         }
 
         static void AddTodo()
@@ -100,15 +81,18 @@ namespace SimpleTodoApp
             Console.Clear();
             Console.WriteLine("=== ADD TODO ===\n");
 
-            Console.WriteLine("What do you need to do? ");
+            Console.WriteLine("Title: ");
             string title = Console.ReadLine();
 
             // Simple validation
             if (string.IsNullOrWhiteSpace(title))
             {
-                Console.WriteLine("\n❌ Todo cannot be empty!");
+                Console.WriteLine("\n❌ Title cannot be empty!");
                 return;
             }
+
+            Console.Write("Description (optional): ");
+            string description = Console.ReadLine();
 
             // Optional: Ask for due date
             DateTime? dueDate = null;
@@ -126,6 +110,13 @@ namespace SimpleTodoApp
                     Console.WriteLine("⚠️ Invalid date format. Using no due date.");
                 }
             }
+
+            Console.WriteLine("Priority:");
+            Console.WriteLine("1. Low");
+            Console.WriteLine("2. Medium (default)");
+            Console.WriteLine("3. High");
+            Console.WriteLine("4. Critical");
+            Console.WriteLine("Select priority (1-4): ");
 
 
 
