@@ -146,45 +146,61 @@ namespace SimpleTodoApp
         static void ViewTodos()
         {
             Console.Clear();
-            Console.WriteLine("=== VIEW TODOS ===\n");
+            Console.WriteLine("=== ALL TODOS ===\n");
 
+            var todos = _todoServce.GetAllTodos();
+            DisplayTodoList(todos);
+        }
+
+        static void ViewPending()
+        {
+            Console.Clear();
+            Console.WriteLine("=== PENDING TODOS ===\n");
+
+            var todos = _todosService.GetPendingTodos();
+            DisplayTodoList(todos);
+        }
+
+        static void ViewCompleted()
+        {
+            Console.Clear();
+            Console.WriteLine("=== COMPLETED TODOS ===\n");
+
+            var todos = _todosService.GetCompletedTodos();
+            DisplayTodoList(todos);
+        }
+
+        static void DisplayTodoList(List<TodoItem> todos)
+        { 
             if (todos.Count == 0)
             {
-                Console.WriteLine("No todos yet. Add some!");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
+                Console.WriteLine("No todos found.");
                 return;
             }
 
-            for (int i = 0; i < todos.Count; i++)
-            {
-                var todo = todos[i];
-                string status = todo.IsCompleted ? "[V]" : "[ ]";
-                string number = (i + 1).ToString().PadLeft(2);
-
-                // Add overdue indicator
-                string overdue = todo.IsOverdue ? " ⚠️ OVERDUE!" : "";
-
-                Console.WriteLine($"{number}. {status} {todo.Title}{overdue}");
-
-                // Show due date if exists
-                if (todo.DueDate.HasValue)
-                {
-                    string dueStatus = todo.IsOverdue ? "OVERDUE since " : "Due: ";
-                    Console.WriteLine($"      {dueStatus}{todo.DueDate.Value:MMM dd, yyyy}");
-                }
-            }
-
-            int completed = 0;
             foreach (var todo in todos)
             {
-                if (todo.IsCompleted) completed++;
-            }
+                Console.WriteLine($"ID: {todo.Id}");
+                Console.WriteLine($"   {todo.GetSummary()}");
 
-            Console.WriteLine($"\n Total: {todos.Count} | Completed: {completed}");
+                if (!string.IsNullOrEmpty(todo.Description))
+                    Console.WriteLine($" Description: {todo.Description}");
 
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+                if (!string.IsNullOrEmpty(todo.Category))
+                    Console.WriteLine($" Category: {todo.Category}");
+
+                if (todo.DueDate.HasValue)
+                    Console.WriteLine($" Due: {todo.DueDate.Value:MMM dd, yyyy}");
+
+                Console.WriteLine($"   Priority: {todo.Priority}");
+                Console.WriteLine($"   Created: {todo.CreatedDate:MMM dd, yyyy}");
+                Console.WriteLine();
+
+
+            } 
+
+            Console.WriteLine($"Total: {todos.Count} todo(s)");
+           
         }
 
         static void DeleteTodo()

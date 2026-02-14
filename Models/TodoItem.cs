@@ -34,7 +34,7 @@ namespace SimpleTodoApp.Models
         /// <summary>
         /// When the todo was created
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime CreatedDate { get; set; }
 
         /// <summary>
         /// Optional due date
@@ -56,7 +56,7 @@ namespace SimpleTodoApp.Models
         /// </summary>
         public TodoItem()
         {
-            CreateDate = DateTime.Now;
+            CreatedDate = DateTime.Now;
         }
 
         /// <summary>
