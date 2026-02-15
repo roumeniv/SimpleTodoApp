@@ -64,7 +64,7 @@ namespace SimpleTodoApp.Services
                 Priority = priority,
                 DueDate = dueDate,
                 Category = category,
-                CreateDate = DateTime.Now
+                CreatedDate = DateTime.Now
             };
 
             _todos.Add(todo);
@@ -145,6 +145,14 @@ namespace SimpleTodoApp.Services
         {
             return _todos.Where(t => t.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
 
+        }
+
+        /// <summary>
+        /// Gets pending (incomplete) todos
+        /// </summary>
+        public List<TodoItem> GetPendingTodos()
+        {
+            return _todos.Where(t => !t.IsCompleted).ToList();
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using SimpleTodoApp.Models;
 using SimpleTodoApp.Services;
@@ -15,7 +16,7 @@ namespace SimpleTodoApp
 
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            
+
 
             Console.WriteLine("=== SIMPLE TODO APP (Refactored Version) ===\n");
             Console.WriteLine("Welcome! Todos are automatically saved.\n");
@@ -43,10 +44,10 @@ namespace SimpleTodoApp
                     case "1": AddTodo(); break;
                     case "2": ViewTodos(); break;
                     case "3": ViewPending(); break;
-                    case "4": ViewCompleted(); break
+                    case "4": ViewCompleted(); break;
                     case "5": MarkTodoComplete(); break;
                     case "6": DeleteTodo(); break;
-                    case "7": SearchTodo(); break;
+                    case "7": SearchTodos(); break;
                     case "8": ShowStats(); break;
                     case "9": running = false; break;
                     default: Console.WriteLine("Invalid choice!"); break;
@@ -94,11 +95,12 @@ namespace SimpleTodoApp
             Console.Write("Description (optional): ");
             string description = Console.ReadLine();
 
-            // Optional: Ask for due date
-            DateTime? dueDate = null;
-            Console.Write("Due date (DD/MM/YYYY or Enter for none): ");
-            string dateInput = Console.ReadLine();
+            Console.Write("Category (optional): ");
+            string category = Console.ReadLine();
 
+            Console.Write("Due date (DD/MM/YYYY or Enter for none): ");
+            DateTime? dueDate = null;
+            string dateInput = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(dateInput))
             {
                 if (DateTime.TryParse(dateInput, out DateTime parseDate))
@@ -118,29 +120,22 @@ namespace SimpleTodoApp
             Console.WriteLine("4. Critical");
             Console.WriteLine("Select priority (1-4): ");
 
-
-
-            // Create and add todo
-            var todo = new TodoItem
+            Priority priority = Priority.Medium;
+            string priorityInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(priorityInput))
             {
-                Title = title,
-                DueDate = dueDate,
-                CreateDate = DateTime.Now
-            };
+                priority = priorityInput switch
+                {
+                    "1" => Priority.Low,
+                    "3" => Priority.High,
+                    "4" => Priority.Critical,
+                    _ => Priority.Medium
+                };
 
-            todos.Add(todo);
+                var todo = _todoService.AddTodo(title, description, priority, dueDate, category);
 
-            // Save after adding
-            SaveTodosToFile();
-
-            Console.WriteLine($"\n✅ Added: {title}");
-            if (dueDate.HasValue)
-            {
-                Console.WriteLine($"   Due: {dueDate.Value:MMM dd, yyyy}");
+                Console.WriteLine($"\nV Todo added susccessfully! ID: {todo.Id}");
             }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
         static void ViewTodos()
@@ -148,7 +143,7 @@ namespace SimpleTodoApp
             Console.Clear();
             Console.WriteLine("=== ALL TODOS ===\n");
 
-            var todos = _todoServce.GetAllTodos();
+            var todos = _todoService.GetAllTodos();
             DisplayTodoList(todos);
         }
 
@@ -157,7 +152,7 @@ namespace SimpleTodoApp
             Console.Clear();
             Console.WriteLine("=== PENDING TODOS ===\n");
 
-            var todos = _todosService.GetPendingTodos();
+            var todos = _todoService.GetPendingTodos();
             DisplayTodoList(todos);
         }
 
@@ -166,12 +161,12 @@ namespace SimpleTodoApp
             Console.Clear();
             Console.WriteLine("=== COMPLETED TODOS ===\n");
 
-            var todos = _todosService.GetCompletedTodos();
+            var todos = _todoService.GetCompletedTodos();
             DisplayTodoList(todos);
         }
 
         static void DisplayTodoList(List<TodoItem> todos)
-        { 
+        {
             if (todos.Count == 0)
             {
                 Console.WriteLine("No todos found.");
@@ -197,66 +192,10 @@ namespace SimpleTodoApp
                 Console.WriteLine();
 
 
-            } 
+            }
 
             Console.WriteLine($"Total: {todos.Count} todo(s)");
-           
-        }
 
-        static void DeleteTodo()
-        {
-            Console.Clear();
-            Console.WriteLine("=== Delete TODO ===\n");
-
-            if (todos.Count == 0)
-            {
-                Console.WriteLine("No todos to delete.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
-                return;
-            }
-
-            for (int i = 0; i < todos.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {todos[i].Title}");
-            }
-
-            Console.Write("\nEnter number to delete (0 to cancel): ");
-            string input = Console.ReadLine();
-
-            if (int.TryParse(input, out int number))
-            {
-                if (number == 0)
-                {
-                    Console.WriteLine("Cancelled.");
-                }
-                else
-                {
-                    int index = number - 1;
-
-                    if (index >= 0 && index < todos.Count)
-                    {
-                        string title = todos[index].Title;
-                        todos.RemoveAt(index);
-                        Console.WriteLine($"\n🗑️ Deleted: {title}");
-
-                        // Save after deleting
-                        SaveTodosToFile();
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nX Invalid number!");
-                       
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("\nX Please enter a number!");
-            }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
         static void MarkTodoComplete()
@@ -264,203 +203,126 @@ namespace SimpleTodoApp
             Console.Clear();
             Console.WriteLine("=== MARK TODO COMPLETE ===\n");
 
-            if (todos.Count == 0)
+            var pendingTodos = _todoService.GetPendingTodos();
+            if (pendingTodos.Count == 0)
             {
-                Console.WriteLine("No todos to mark complete.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
+                Console.WriteLine("No peending todos to complete.");
                 return;
             }
 
-            bool hasIncomplete = false;
-            for (int i = 0; i < todos.Count; i++)
+            Console.WriteLine("Pending Todos");
+            foreach (var todo in pendingTodos)
             {
-                if (!todos[i].IsCompleted)
-                {
-                    Console.WriteLine($"{i + 1}. {todos[i].Title}");
-                    hasIncomplete = true;
-                }
+                Console.WriteLine($"{todo.Id}: {todo.Title}");
             }
 
-            if (!hasIncomplete)
-            {
-                Console.WriteLine("All todos are already completed! ");
-                return;
-            }
 
-            Console.Write("\nEnter number to mark complete (0 to cancel): ");
-            string input = Console.ReadLine();
-
-            if (int.TryParse(input, out int number))
+            Console.Write("\nEnter number to mark complete: ");
+            if (int.TryParse(Console.ReadLine(), out int id))
             {
-                if (number == 0)
+                if (_todoService.MarkAsCompleted(id))
                 {
-                    Console.WriteLine("Cancelled.");
+                    Console.WriteLine($"\nV Todo {id} marked as completed!");
                 }
                 else
                 {
-                    var index = number - 1;
-
-                    if (index >= 0 && index < todos.Count)
-                    {
-                        if (!todos[index].IsCompleted)
-                        {
-                            todos[index].IsCompleted = true;
-                            Console.WriteLine($"\n✅ Completed: {todos[index].Title}");
-
-                            // Save after marking complete
-                            SaveTodosToFile();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"\ni Todo is already completed!");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nX Invalid number!");
-                    }
+                    Console.WriteLine($"\n X Todo {id} not found or already completed.");
                 }
             }
             else
             {
-                Console.WriteLine("\nX Please enter a number!");
+                Console.WriteLine("\nX Invalid ID!");
             }
 
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
-        static void EditTodo()
+        static void DeleteTodo()
         {
             Console.Clear();
-            Console.WriteLine("=== EDIT TODO ===");
+            Console.WriteLine("=== DELETE TODO ===\n");
 
+            var todos = _todoService.GetAllTodos();
             if (todos.Count == 0)
             {
-                Console.WriteLine("No todos to edit.");
+                Console.WriteLine("No todos to delete.");
                 return;
             }
 
-            ViewTodos();
-
-            Console.Write("\nEnter number to edit (0 to cancel): ");
-            if (int.TryParse(Console.ReadLine(), out int number) && number > 0)
-            {
-                int index = number - 1;
-                if (index >= 0 && index < todos.Count)
+            Console.WriteLine("All Todos:");
+            foreach (var todo in todos) {
                 {
+                    Console.WriteLine($"{todo.Id}. {todo.Title}");
+                }
 
-                    Console.WriteLine($"New title (current: '{todos[index].Title}'): ");
-                    string newTitle = Console.ReadLine();
-
-                    if (!string.IsNullOrWhiteSpace(newTitle))
+                Console.Write("\nEnter Todo ID to delete: ");
+                if (int.TryParse(Console.ReadLine(), out int id))
+                {
+                    if (_todoService.DeleteTodo(id))
                     {
-                        todos[index].Title = newTitle;
-                        SaveTodosToFile();
-                        Console.WriteLine($"\n✅ Update!");
-                        Console.WriteLine("Press any key to continue...");
-                        Console.ReadKey();
-
+                        Console.WriteLine($"\nV Todo {id} deleted!");
                     }
                     else
                     {
-                        Console.WriteLine("\n❌ Title cannot be empty!");
+                        Console.WriteLine($"\nX Todo {id} not found.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("\n❌ Invalid number!");
+                    Console.WriteLine("\nX Invalid ID!");
+
                 }
             }
         }
-        
-        static void SaveTodosToFile()
+
+        static void SearchTodos()
         {
-            try
-            {
-                // Create a simple text representation
-                List<string> lines = new List<string>();
+            Console.Clear();
+            Console.WriteLine("=== SEARCH TODOS ===\n");
 
-                foreach (var todo in todos)
-                {
-                    // Format Title|IsCompleted/CreateDate/DueDate
-                    string dueDateStr = todo.DueDate?.ToString("o") ?? "";  // ISO format
-                    string line = $"{todo.Title}|{todo.IsCompleted}|{todo.CreateDate:o}|{dueDateStr}";
-                    lines.Add(line);
-                }
+            Console.WriteLine("Enter search term: ");
+            string SearchTerm = Console.ReadLine();
 
-                // Save to file
-                File.WriteAllLines("todos.txt", lines);
-                Console.WriteLine("(Saved to file)");  // Optional: show confirmation
-            }
-            catch (Exception ex)
+            if (string.IsNullOrWhiteSpace(SearchTerm))
             {
-                // Silent failo or optional message
-                Console.WriteLine($"Warning: Could not save: {ex.Message}");
+                Console.WriteLine("\nX Please enter a search term.");
+                return;
             }
+
+            var results = _todoService.SearchTodos(SearchTerm);
+            Console.WriteLine($"\n Found {results.Count} result(s):");
+            DisplayTodoList(results);
+
         }
 
-        static void LoadTodosFromFile()
+        static void ShowStats()
         {
-            try
+            Console.Clear();
+            Console.WriteLine("=== STATISTICS ===\n");
+
+            var stats = _todoService.GetStats();
+            Console.WriteLine(stats.ToString());
+
+            var overdue = _todoService.GetOverdueTodos();
+            if (overdue.Count > 0)
             {
-                if (!File.Exists("todos.txt"))
-                    return; // No file yet, that's OK
+                Console.WriteLine($"\n! You have {overdue.Count} overdue todo(s):");
 
-                string[] lines = File.ReadAllLines("todos.txt");
-
-                foreach (string line in lines)
+                foreach (var todo in overdue)
                 {
-                    string[] parts = line.Split('|');
-
-                    if (parts.Length >= 3) // Need at least Title, IsCompleted, CreateDate
-                    {
-                        var todo = new TodoItem
-                        {
-                            Title = parts[0],
-                            IsCompleted = bool.Parse(parts[1]),
-                            CreateDate = DateTime.Parse(parts[2])
-                        };
-
-                        // Optional: DueDate (might be empty)
-                        if (parts.Length > 3 && !string.IsNullOrEmpty(parts[3]))
-                        {
-                            todo.DueDate = DateTime.Parse(parts[3]);
-                        }
-
-                        todos.Add(todo);
-                    }
+                    Console.WriteLine($" . {todo.Title} (due {todo.DueDate:MMM dd})");
                 }
-
-                // Optional: Show loaded count
-                Console.WriteLine($"Loaded {todos.Count} todos from file");
             }
-            catch (Exception ex)
+
+            var today = _todoService.GetTodayTodos();
+            if (today.Count > 0)
             {
-                Console.WriteLine($"Note: Could not load saved todos. Starting fresh.");
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.ReadKey();
+                Console.WriteLine($"\n You have {today.Count} todo(s) due today:");
+
+                foreach (var todo in overdue)
+                {
+                    Console.WriteLine($" . {todo.Title}");
+                }
             }
         }
     }
-/*
-    class TodoItem
-    {
-        public string Title { get; set; } = "";
-        public bool IsCompleted { get; set; }
-        public DateTime CreateDate { get; set; }
-        public DateTime? DueDate { get; set; }  // Nullable DateTime
-
-        // Optional: Add this method
-        public bool IsOverdue
-        {
-            get
-            {
-                return !IsCompleted && DueDate.HasValue && DueDate.Value < DateTime.Now;
-            }
-        }
-    }
-*/
 }
